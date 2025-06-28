@@ -33,30 +33,22 @@ This script helps you **back up** and **restore** DNS records for all your AWS R
 python route53_restore.py --backup-all
 Creates a folder like:
 
-pgsql
-Copy
-Edit
+
 backup20250628_134000/
 ├── example.com_20250628.json
 ├── internal.local_20250628.json
 └── route53_backup.log
 🗂 Backup a specific zone
-bash
-Copy
-Edit
+
 python route53_restore.py --backup --zone-id Z123456ABCDEF
 ♻️ Restore from a backup file
 Convert backup to change batch (without applying):
 
-bash
-Copy
-Edit
+
 python route53_restore.py --input backup20250628_134000/example.com_20250628.json
 Apply changes to Route 53:
 
-bash
-Copy
-Edit
+
 python route53_restore.py \
   --input backup20250628_134000/example.com_20250628.json \
   --zone-id Z123456ABCDEF \
@@ -71,14 +63,10 @@ Uses UPSERT — safe to re-run without duplicates
 Logs are saved in the backup folder
 
 🗜️ Optional: Zip a backup folder
-bash
-Copy
-Edit
+
 zip -r backup20250628_134000.zip backup20250628_134000/
 🔧 Setup
-bash
-Copy
-Edit
+
 git clone https://github.com/lijogrg444/route53_Backup_restore.git
 cd route53_Backup_restore
 
@@ -87,21 +75,12 @@ python -m venv .venv
 source .venv/bin/activate
 
 pip install -r requirements.txt
-🧪 Coming Soon
-Automated tests (pytest)
-
-CloudWatch/Lambda trigger option
 
 Tag-based zone selection
 
 📄 License
 MIT License
-© 2025 Lijo G
+© 2025 LijoG.com
 
-yaml
-Copy
-Edit
+--
 
----
-
-Let me know if you want me to directly generate the LICENSE file or `.gitignore` for you next.
