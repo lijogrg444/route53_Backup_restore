@@ -1,120 +1,107 @@
-A Python tool to back up and restore Amazon Route 53 DNS zones with safety checks, structured output, and detailed logging. Perfect for routinely safeguarding DNS records or migrating them between accounts.
+# 🔁 Route 53 Backup & Restore Utility
 
-✨ Features
+This script helps you **back up** and **restore** DNS records for all your AWS Route 53 hosted zones. It supports structured backups, safe TXT record handling, and restores that play nicely with Route 53 defaults.
 
-Capability
+---
 
-Details
+## 🚀 Features
 
-Backup single zone
+- ✅ Backup all hosted zones or a single zone
+- 🧾 One JSON file per zone, saved in a dated folder
+- 🔁 Restore deleted or modified records safely
+- 🔐 Skips apex `SOA` and `NS` records during restore (managed by Route 53)
+- 🧠 Splits long `TXT` records into DNS-safe 255-character strings
+- 🪵 Logs all output into a `route53_backup.log` file
+- 🗜 Optional: zip up the backup folder
 
---backup --zone-id Z123… – saves one JSON file per zone
+---
 
-Backup all zones
+## 📦 Requirements
 
---backup-all – one JSON per zone in a dated folder
+- Python 3.8+
+- boto3 (install it with `pip install boto3`)
+- AWS credentials configured (via CLI, environment, or instance role)
 
-Restore
+---
 
-Converts a backup to an AWS‑ready change batch and can apply it (--apply)
+## 📂 Example Usage
 
-Safe TXT handling
+### 🔄 Backup all Route 53 zones
 
-Splits long TXT strings into ≤ 255‑char chunks
 
-Skips apex SOA/NS
+```bash
+python route53_restore.py --backup-all
+Creates a folder like:
 
-Avoids Route 53 conflicts on restore
+pgsql
+Copy
+Edit
+backup20250628_134000/
+├── example.com_20250628.json
+├── internal.local_20250628.json
+└── route53_backup.log
+🗂 Backup a specific zone
+bash
+Copy
+Edit
+python route53_restore.py --backup --zone-id Z123456ABCDEF
+♻️ Restore from a backup file
+Convert backup to change batch (without applying):
 
-Logging
+bash
+Copy
+Edit
+python route53_restore.py --input backup20250628_134000/example.com_20250628.json
+Apply changes to Route 53:
 
-Timestamped log saved in the same backup folder
+bash
+Copy
+Edit
+python route53_restore.py \
+  --input backup20250628_134000/example.com_20250628.json \
+  --zone-id Z123456ABCDEF \
+  --apply
+🧼 Safety Notes
+TXT records are broken into ≤255-char segments automatically
 
-Structured folders
+Zone apex SOA and NS records are not restored
 
-All output lives in backupYYYYMMDD_HHMMSS/
+Uses UPSERT — safe to re-run without duplicates
 
-🛠 Requirements
+Logs are saved in the backup folder
 
-Python 3.8+
+🗜️ Optional: Zip a backup folder
+bash
+Copy
+Edit
+zip -r backup20250628_134000.zip backup20250628_134000/
+🔧 Setup
+bash
+Copy
+Edit
+git clone https://github.com/lijogrg444/route53_Backup_restore.git
+cd route53_Backup_restore
 
-boto3 (pip install boto3)
-
-AWS credentials (CLI profile, environment variables, or EC2/IAM role)
-
-🚀 Installation
-
-# Clone repository
-git clone https://github.com/your‑org/route53‑backup.git
-cd route53‑backup
-
-# (Optional) create a virtual environment
+# Optional: create virtual environment
 python -m venv .venv
 source .venv/bin/activate
 
-# Install dependencies
-pip install -r requirements.txt  # just boto3 for now
+pip install -r requirements.txt
+🧪 Coming Soon
+Automated tests (pytest)
 
-⚡ Quick Start
+CloudWatch/Lambda trigger option
 
-Backup all hosted zones
+Tag-based zone selection
 
-python route53_restore.py --backup-all
+📄 License
+MIT License
+© 2025 Lijo G
 
-Creates a folder such as:
+yaml
+Copy
+Edit
 
-backup20250626_154510/
-├── example.com_20250626.json
-├── internal.local_20250626.json
-└── route53_backup.log
+---
 
-Backup a single zone
-
-python route53_restore.py --backup --zone-id Z123456ABCDEF
-
-Restore records (convert only)
-
-python route53_restore.py --input backup20250626_154510/example.com_20250626.json
-# -> restore.json generated in current directory
-
-Restore records (and apply to Route 53)
-
-python route53_restore.py \
-  --input backup20250626_154510/example.com_20250626.json \
-  --zone-id Z123456ABCDEF \
-  --apply
-
-📂 Output Structure
-
-backupYYYYMMDD_HHMMSS/
-├── <zone1>_YYYYMMDD.json
-├── <zone2>_YYYYMMDD.json
-└── route53_backup.log
-
-Log file mirrors everything printed to the console.
-
-🔒 Safety Details
-
-TXT Records – Long strings are chunked automatically so each quoted segment is ≤ 255 characters.
-
-SOA/NS at Apex – Skipped during restore; Route 53 creates and manages them.
-
-UPSERT Actions – Existing records are updated, new ones are created, nothing is deleted.
-
-🗜 Optional: Compress Backups
-
-After a backup:
-
-zip -r backup20250626_154510.zip backup20250626_154510/
-
-🧩 Extending / Contributing
-
-Fork the repo & create a feature branch.
-
-Add tests (coming soon: pytest).
-
-Open a pull request.
-
-📄 License
-
-MIT License © 2025 Your Name or Company
+Let me know if you want me to directly generate the LICENSE file or `.gitignore` for you next.
